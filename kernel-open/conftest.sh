@@ -4034,6 +4034,23 @@ compile_test() {
             fi
         ;;
 
+        drm_fb_create_takes_format_info)
+            #
+            # Determine if a struct drm_format_info pointer is passed into
+            # the .fb_create callback. Linux commit 81112eaac559 added it.
+            #
+            CODE="
+            #include <drm/drm_mode_config.h>
+            #include <drm/drm_framebuffer.h>
+
+            static const struct drm_mode_config_funcs funcs;
+            void conftest_drm_fb_create_takes_format_info(void) {
+                funcs.fb_create(NULL, NULL, NULL, NULL);
+            }"
+
+            compile_check_conftest "$CODE" "NV_DRM_FB_CREATE_TAKES_FORMAT_INFO" "" "types"
+        ;;
+
         drm_connector_funcs_have_mode_in_name)
             #
             # Determine if _mode_ is present in connector function names.  We
