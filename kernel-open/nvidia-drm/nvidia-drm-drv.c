@@ -222,9 +222,6 @@ static struct drm_framebuffer *nv_drm_framebuffer_create(
     #endif
 )
 {
-    #if defined(NV_DRM_FB_CREATE_TAKES_FORMAT_INFO)
-    (void)format_info;
-    #endif
     struct drm_mode_fb_cmd2 local_cmd;
     struct drm_framebuffer *fb;
 
@@ -233,6 +230,9 @@ static struct drm_framebuffer *nv_drm_framebuffer_create(
     fb = nv_drm_internal_framebuffer_create(
             dev,
             file,
+#if defined(NV_DRM_FB_CREATE_TAKES_FORMAT_INFO)
+            format_info,
+#endif
             &local_cmd);
 
     #if !defined(NV_DRM_HELPER_MODE_FILL_FB_STRUCT_HAS_CONST_MODE_CMD_ARG)
