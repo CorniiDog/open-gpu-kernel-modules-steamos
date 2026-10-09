@@ -166,6 +166,9 @@ static enum drm_connector_status __nv_drm_connector_detect_internal(
 
     BUG_ON(!mutex_is_locked(&dev->mode_config.mutex));
 
+    /* Never retain the previous display after a failed hotplug probe. */
+    nv_connector->nv_detected_encoder = NULL;
+
     if (nv_connector->edid != NULL) {
         nv_drm_free(nv_connector->edid);
         nv_connector->edid = NULL;
@@ -207,6 +210,10 @@ static enum drm_connector_status __nv_drm_connector_detect_internal(
 done:
 
     nv_drm_free(pDetectParams);
+
+    if (status == connector_status_disconnected) {
+        nv_drm_connector_update_edid_property(connector, NULL);
+    }
 
     if (status == connector_status_disconnected &&
         nv_connector->modeset_permission_filep) {
@@ -250,6 +257,10 @@ static int nv_drm_connector_get_modes(struct drm_connector *connector)
     NvU32 modeIndex = 0;
     int   count = 0;
 
+
+    if (nv_detected_encoder == NULL) {
+        return 0;
+    }
 
     if (nv_connector->edid != NULL) {
         nv_drm_connector_update_edid_property(connector, nv_connector->edid);
