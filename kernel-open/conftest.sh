@@ -4034,6 +4034,23 @@ compile_test() {
             fi
         ;;
 
+        drm_fb_create_takes_format_info)
+            #
+            # Determine if a struct drm_format_info pointer is passed into
+            # the .fb_create callback. Linux commit 81112eaac559 added it.
+            #
+            CODE="
+            #include <drm/drm_mode_config.h>
+            #include <drm/drm_framebuffer.h>
+
+            static const struct drm_mode_config_funcs funcs;
+            void conftest_drm_fb_create_takes_format_info(void) {
+                funcs.fb_create(NULL, NULL, NULL, NULL);
+            }"
+
+            compile_check_conftest "$CODE" "NV_DRM_FB_CREATE_TAKES_FORMAT_INFO" "" "types"
+        ;;
+
         drm_connector_funcs_have_mode_in_name)
             #
             # Determine if _mode_ is present in connector function names.  We
@@ -6490,6 +6507,25 @@ compile_test() {
             }"
 
             compile_check_conftest "$CODE" "NV_HANDLE_MM_FAULT_HAS_PT_REGS_ARG" "" "types"
+        ;;
+
+        pci_resize_resource_has_exclude_bars_arg)
+            #
+            # Determine if pci_resize_resource() has exclude_bars argument.
+            #
+            # exclude_bars was added by Linux commit 337b1b566db0.
+            #
+            CODE="
+            #include <linux/pci.h>
+
+            typeof(pci_resize_resource) conftest_pci_resize_resource_has_exclude_bars_arg;
+            int __must_check conftest_pci_resize_resource_has_exclude_bars_arg(struct pci_dev *dev,
+                                                                               int i, int size,
+                                                                               int exclude_bars) {
+                return 0;
+            }"
+
+            compile_check_conftest "$CODE" "NV_PCI_RESIZE_RESOURCE_HAS_EXCLUDE_BARS_ARG" "" "types"
         ;;
 
         pci_rebar_get_possible_sizes)

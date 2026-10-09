@@ -84,6 +84,9 @@ static inline void nv_fb_set_gem_obj(
 struct drm_framebuffer *nv_drm_internal_framebuffer_create(
     struct drm_device *dev,
     struct drm_file *file,
+#if defined(NV_DRM_FB_CREATE_TAKES_FORMAT_INFO)
+    const struct drm_format_info *format_info,
+#endif
     struct drm_mode_fb_cmd2 *cmd);
 
 #endif /* NV_DRM_ATOMIC_MODESET_AVAILABLE */
